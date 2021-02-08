@@ -1,0 +1,165 @@
+@page "/"
+
+@using DemoArmGraphApp.Data
+
+@inject Microsoft.Identity.Web.MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
+@inject AzureRestClient AzureClient
+@inject GraphRestClient GraphClient
+
+<style>
+    .app-section {
+        font-size: larger;
+        background-color: lightgray;
+        margin-bottom: .5rem;
+        padding-left: .3rem;
+    }
+
+    .app-subsection {
+        margin-left: 2rem;
+    }
+
+    .app-table th,
+    .app-table td {
+        padding: 0px 5px 0px 0px;
+        vertical-align: middle;
+        font-size: smaller;
+    }
+</style>
+
+<h3>Demo Web App: Azure Resource Manager (ARM) and Microsoft Graph </h3>
+<hr />
+
+<div class="app-section">Microsoft Graph : Profile</div>
+<div class="app-subsection">
+    @if (userProfile != null)
+    {
+        <table class="app-table table" style="font-size:smaller">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Display Name</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Job Title</th>
+                    <th>User Principal Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@userProfile.id</td>
+                    <td>@userProfile.displayName</td>
+                    <td>@userProfile.givenName</td>
+                    <td>@userProfile.surname</td>
+                    <td>@userProfile.jobTitle</td>
+                    <td>@userProfile.userPrincipalName</td>
+                </tr>
+            </tbody>
+        </table>
+    }
+</div>
+<hr />
+
+<div class="app-section">Azure Resource Manager : Subscriptions</div>
+<div class="app-subsection">
+    @if (subscriptions != null)
+    {
+        <table class="app-table table" style="font-size:smaller">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Tenant</th>
+                    <th>State</th>
+                    <th>Authorization Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sub in subscriptions)
+                {
+                    <tr>
+                        <td>@sub.subscriptionId</td>
+                        <td>@sub.displayName</td>
+                        <td>@sub.tenantId</td>
+                        <td>@sub.state</td>
+                        <td>@sub.authorizationSource</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<hr />
+
+<div class="app-section">Azure Resource Manager : Billing Accounts</div>
+<div class="app-subsection">
+    @if (billingAccounts != null)
+    {
+        <table class="app-table table" style="font-size:smaller">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Agreement</th>
+                    <th>SoldTo Company</th>
+                    <th>SoldTo Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var account in billingAccounts)
+                {
+                    <tr>
+                        <td>@account.name</td>
+                        <td>@account.properties?.displayName</td>
+                        <td>@account.properties?.accountType</td>
+                        <td>@account.properties?.accountStatus</td>
+                        <td>@account.properties?.agreementType</td>
+                        <td>@account.properties?.soldTo?.companyName</td>
+                        <td>@account.properties?.soldTo?.firstName @account.properties?.soldTo?.lastName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<hr />
+
+@code{
+    private Data.Graph.UserProfile userProfile;
+    private IList<Data.Azure.Subscriptions.Subscription> subscriptions;
+    private IList<Data.Azure.Billing.BillingAccount> billingAccounts;
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            // Get user's profile
+            var profileResponse = await GraphClient.GetProfileAsync();
+            if (profileResponse.IsSuccessful)
+            {
+                userProfile = profileResponse.Data;
+            }
+
+            // Get user's subscriptions
+            var subscriptionsResponse = await AzureClient.GetSubscriptionsAsync();
+            if (subscriptionsResponse.IsSuccessful)
+            {
+                // NOTE: getting only the first batch
+                subscriptions = subscriptionsResponse.Data.value;
+            }
+
+            // Get user's billing accounts
+            var billingAccountResponse = await AzureClient.GetBillingAccountsAsync();
+            if (billingAccountResponse.IsSuccessful)
+            {
+                // NOTE: getting only the first batch
+                billingAccounts = billingAccountResponse.Data.value;
+            }
+        }
+        catch (Exception ex)
+        {
+            ConsentHandler.HandleException(ex);
+        }
+    }
+}
