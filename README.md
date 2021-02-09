@@ -12,7 +12,7 @@ This sample uses Blazor Server Web App, however core concepts can be applied to 
 
 To run this sample:
 
->Pre-requisities: Install .NET 5.0 or later by following the instructions at [Download .NET](https://www.microsoft.com/net/core).
+>Pre-requisites: Install .NET 5.0 or later by following the instructions at [Download .NET](https://www.microsoft.com/net/core).
 
 ### Step 1: Register the sample with your Azure AD tenant
 
@@ -93,7 +93,7 @@ cd DemoArmGraphApp
 
   In the **appsettings.json** file:
   
-- replace the `<domain>` value with the *Azure AD domain name*,  e.g. mydomain.onmicrosoft.com where you registered your Application on *Step 1*.
+- replace the `<domain>` value with the *Azure AD domain name*, e.g. mydomain.onmicrosoft.com where you registered your Application on *Step 1*.
 - replace the `<tenant id>` value with the *Tenant ID* where you registered your Application on *Step 1* (see Azure Active Directory overview page).
 - replace the `<application id>` value with the *Application ID* from the application you registered in Application Registration portal on *Step 1*.
 - replace the `<application secret>` value with the *Client Secret* from the application you registered in Application Registration portal on *Step 1*.
@@ -135,6 +135,6 @@ cd DemoArmGraphApp
 
 2. Open your web browser and make a request to the app. Accept the IIS Express SSL certificate if needed. The app immediately attempts to authenticate you via the identity platform endpoint. Sign in with your work or school account.
 
-3. If prompted, consent to the permissions requested by the appliation.
+3. If prompted, consent to the permissions requested by the application.
 
     ![User consent](ReadmeFiles/user-consent.png)
