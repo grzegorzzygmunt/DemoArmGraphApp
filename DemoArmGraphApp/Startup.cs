@@ -31,7 +31,7 @@ namespace DemoArmGraphApp
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi(scopes.ToArray())
-               .AddInMemoryTokenCaches();
+                .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
